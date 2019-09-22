@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cts.tib.intfc.JsonToCsvMapperServiceIntfc;
-import com.cts.tib.util.ConvertorUtil;
 import com.cts.tib.util.MapperUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,7 +44,6 @@ public class jsonToCsvMapperImpl implements JsonToCsvMapperServiceIntfc {
 			log.error("Error in writing to file", e);
 			return file;
 		}
-		return file;
 	}
 
 }
