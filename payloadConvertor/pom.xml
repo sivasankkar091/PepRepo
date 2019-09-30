@@ -2,11 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.cts.tib.retail</groupId>
+	<groupId>com.cts.onenetwork</groupId>
 	<artifactId>payloadConvertor</artifactId>
 	<version>1.0</version>
-	<name>Payload-Convertor</name>
-	<url>http://maven.apache.org</url>
+	<name>payloadConvertor</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
