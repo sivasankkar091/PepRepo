@@ -19,63 +19,66 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cts.onenetwork.configuration.IntakeServiceConfiguration;
-import com.cts.onenetwork.service.CarrierToMovementTrackingConversion;
-import com.cts.onenetwork.service.DeliveryToShipmentInboundConversion;
-import com.cts.onenetwork.service.LoadCreationToShipmentInboundConversion;
-import com.cts.onenetwork.service.PurchaseOrderToOneNetworkPurchaseOrderConversion;
-import com.cts.onenetwork.service.SalesOrderToOneNetworkSalesOrderConversion;
-import com.cts.onenetwork.service.StockTransferToEnhancedDeploymentOrderConversion;
-import com.cts.onenetwork.service.TenderToShipmentTrackingConversion;
-import com.cts.onenetwork.service.TransportationDocumentToShipmentInboundConversion;
-import com.cts.onenetwork.service.TripStatusToTripStatusCompletedConversion;
-import com.cts.onenetwork.service.TripStatusToTripStatusUpdateConverion;
+import com.cts.onenetwork.models.source.SourceModel;
+import com.cts.onenetwork.models.source.SourceModel1;
+import com.cts.onenetwork.models.source.SourceModel2;
+import com.cts.onenetwork.models.source.SourceModel3;
+import com.cts.onenetwork.models.source.SourceModel4;
+import com.cts.onenetwork.models.source.SourceModel5;
+import com.cts.onenetwork.models.source.SourceModel6;
+import com.cts.onenetwork.models.source.SourceModel7;
+import com.cts.onenetwork.models.source.SourceModel8;
+import com.cts.onenetwork.models.source.SourceModel9;
+import com.cts.onenetwork.service.geotab.CarrierToMovementTrackingConversion;
+import com.cts.onenetwork.service.jda.LoadCreationToShipmentInboundConversion;
+import com.cts.onenetwork.service.jda.TenderToShipmentTrackingConversion;
+import com.cts.onenetwork.service.sap.DeliveryToShipmentInboundConversion;
+import com.cts.onenetwork.service.sap.PurchaseOrderToOneNetworkPurchaseOrderConversion;
+import com.cts.onenetwork.service.sap.SalesOrderToOneNetworkSalesOrderConversion;
+import com.cts.onenetwork.service.sap.StockTransferToEnhancedDeploymentOrderConversion;
+import com.cts.onenetwork.service.sap.TransportationDocumentToShipmentInboundConversion;
+import com.cts.onenetwork.service.sap.TripStatusToTripStatusCompletedConversion;
+import com.cts.onenetwork.service.sap.TripStatusToTripStatusUpdateConverion;
 import com.cts.onenetwork.util.IntakeServiceConstants;
 
 @RestController
 @RequestMapping("/onenetwork")
 public class IntakeServiceController {
 	private static Logger log = LoggerFactory.getLogger(IntakeServiceController.class);
-
 	@Autowired
-	IntakeServiceConfiguration payloadConvertorConfiguration;
-
+	private CarrierToMovementTrackingConversion carrierToMovementTrackingConversion;
 	@Autowired
-	CarrierToMovementTrackingConversion carrierToMovementTrackingConversion;
+	private DeliveryToShipmentInboundConversion deliveryToShipmentInboundConversion;
 	@Autowired
-	DeliveryToShipmentInboundConversion deliveryToShipmentInboundConversion;
+	private LoadCreationToShipmentInboundConversion loadCreationToShipmentInboundConversion;
 	@Autowired
-	LoadCreationToShipmentInboundConversion loadCreationToShipmentInboundConversion;
+	private PurchaseOrderToOneNetworkPurchaseOrderConversion purchaseOrderToOneNetworkPurchaseOrderConversion;
 	@Autowired
-	PurchaseOrderToOneNetworkPurchaseOrderConversion purchaseOrderToOneNetworkPurchaseOrderConversion;
+	private SalesOrderToOneNetworkSalesOrderConversion salesOrderToOneNetworkSalesOrderConversion;
 	@Autowired
-	SalesOrderToOneNetworkSalesOrderConversion salesOrderToOneNetworkSalesOrderConversion;
+	private StockTransferToEnhancedDeploymentOrderConversion stockTransferToEnhancedDeploymentOrderConversion;
 	@Autowired
-	StockTransferToEnhancedDeploymentOrderConversion stockTransferToEnhancedDeploymentOrderConversion;
+	private TenderToShipmentTrackingConversion tenderToShipmentTrackingConversion;
 	@Autowired
-	TenderToShipmentTrackingConversion tenderToShipmentTrackingConversion;
+	private TransportationDocumentToShipmentInboundConversion transportationDocumentToShipmentInboundConversion;
 	@Autowired
-	TransportationDocumentToShipmentInboundConversion transportationDocumentToShipmentInboundConversion;
+	private TripStatusToTripStatusCompletedConversion tripStatusToTripStatusCompletedConversion;
 	@Autowired
-	TripStatusToTripStatusCompletedConversion tripStatusToTripStatusCompletedConversion;
+	private TripStatusToTripStatusUpdateConverion tripStatusToTripStatusUpdateConverion;
 	@Autowired
-	TripStatusToTripStatusUpdateConverion tripStatusToTripStatusUpdateConverion;
-	@Autowired
-	IntakeServiceConfiguration intakeServiceConfig;
+	private IntakeServiceConfiguration intakeServiceConfig;
 
 	@PostMapping(value = "/order/sales", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getSalesOrderFromSap(@RequestBody String payload) {
+	public ResponseEntity<?> getSalesOrderFromSap(@RequestBody SourceModel payload) {
 		try {
 			String connectServicePayload = salesOrderToOneNetworkSalesOrderConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -88,18 +91,15 @@ public class IntakeServiceController {
 
 	@PostMapping(value = "/order/stocktransfer", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getStockTransferOrderFromSap(@RequestBody String payload) {
+	public ResponseEntity<?> getStockTransferOrderFromSap(@RequestBody SourceModel1 payload) {
 		try {
 			String connectServicePayload = stockTransferToEnhancedDeploymentOrderConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -112,18 +112,15 @@ public class IntakeServiceController {
 
 	@PostMapping(value = "/order/purchase", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getPurchaseOrderFromSap(@RequestBody String payload) {
+	public ResponseEntity<?> getPurchaseOrderFromSap(@RequestBody SourceModel2 payload) {
 		try {
 			String connectServicePayload = purchaseOrderToOneNetworkPurchaseOrderConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -136,18 +133,15 @@ public class IntakeServiceController {
 
 	@PostMapping(value = "/carrier/getLocation", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getlocationFromGeoTab(@RequestBody String payload) {
+	public ResponseEntity<?> getlocationFromGeoTab(@RequestBody SourceModel3 payload) {
 		try {
 			String connectServicePayload = carrierToMovementTrackingConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -176,18 +170,15 @@ public class IntakeServiceController {
 	 */
 	@PostMapping(value = "/tripstatus/update", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getTripStatusUpdateFromSap(@RequestBody String payload) {
+	public ResponseEntity<?> getTripStatusUpdateFromSap(@RequestBody SourceModel4 payload) {
 		try {
 			String connectServicePayload = tripStatusToTripStatusUpdateConverion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -200,18 +191,15 @@ public class IntakeServiceController {
 
 	@PostMapping(value = "/tripstatus/complete", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getCompletedTripStatusDetailsFromSap(@RequestBody String payload) {
+	public ResponseEntity<?> getCompletedTripStatusDetailsFromSap(@RequestBody SourceModel5 payload) {
 		try {
 			String connectServicePayload = tripStatusToTripStatusCompletedConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -223,18 +211,15 @@ public class IntakeServiceController {
 	}
 
 	@PostMapping(value = "/tender", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getTenderDetailsFromJda(@RequestBody String payload) {
+	public ResponseEntity<?> getTenderDetailsFromJda(@RequestBody SourceModel6 payload) {
 		try {
 			String connectServicePayload = tenderToShipmentTrackingConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -247,18 +232,15 @@ public class IntakeServiceController {
 
 	@PostMapping(value = "/loadcreation", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getLoadCreationDetailsFromJda(@RequestBody String payload) {
+	public ResponseEntity<?> getLoadCreationDetailsFromJda(@RequestBody SourceModel7 payload) {
 		try {
 			String connectServicePayload = loadCreationToShipmentInboundConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -270,18 +252,15 @@ public class IntakeServiceController {
 	}
 
 	@PostMapping(value = "/delivery", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getDeliveryDetailsFromSap(@RequestBody String payload) {
+	public ResponseEntity<?> getDeliveryDetailsFromSap(@RequestBody SourceModel8 payload) {
 		try {
 			String connectServicePayload = deliveryToShipmentInboundConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
-			Map<String, String> requestBody = new HashMap<>();
-			requestBody.put("connectorServicePayload", connectServicePayload);
+					.buildAndExpand().encode().toUri().toString();
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 
@@ -294,18 +273,17 @@ public class IntakeServiceController {
 
 	@PostMapping(value = "/transportdocumentation", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<?> getTransportationDocumentdetailsFromSap(@RequestBody String payload) {
+	public ResponseEntity<?> getTransportationDocumentdetailsFromSap(@RequestBody SourceModel9 payload) {
 		try {
 			String connectServicePayload = transportationDocumentToShipmentInboundConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
-			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
-					.buildAndExpand(requestMap).encode().toUri().toString();
+					.buildAndExpand().encode().toUri().toString();
 			Map<String, String> requestBody = new HashMap<>();
 			requestBody.put("connectorServicePayload", connectServicePayload);
 			HttpHeaders header = new HttpHeaders();
 			header.setBasicAuth(intakeServiceConfig.getBasicAuthUserName(), intakeServiceConfig.getBasicAuthPassword());
-			HttpEntity<Map> requestEntity = new HttpEntity<>(requestBody, header);
+			HttpEntity<String> requestEntity = new HttpEntity<>(connectServicePayload, header);
 			template.exchange(url, HttpMethod.POST, requestEntity, String.class);
 			return ResponseEntity.ok(IntakeServiceConstants.SUCCESS_RESPONSE);
 

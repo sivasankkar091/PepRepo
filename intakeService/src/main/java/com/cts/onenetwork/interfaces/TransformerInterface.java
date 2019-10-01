@@ -1,5 +1,5 @@
 package com.cts.onenetwork.interfaces;
 
 public interface TransformerInterface {
-	public String transform(Object obj);
+	public String transform(Object srcObject);
 }
