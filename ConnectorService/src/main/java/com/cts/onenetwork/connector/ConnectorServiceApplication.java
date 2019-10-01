@@ -1,13 +1,13 @@
-package com.cts.onenetwork;
+package com.cts.onenetwork.connector;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PayloadReceiverApplication {
+public class ConnectorServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PayloadReceiverApplication.class, args);
+		SpringApplication.run(ConnectorServiceApplication.class, args);
 	}
 
 }

@@ -9,9 +9,9 @@
 	</parent>
 
 	<groupId>com.cts.onenetwork</groupId>
-	<artifactId>payloadReceiver</artifactId>
+	<artifactId>ConnectorService</artifactId>
 	<version>1.0</version>
-	<name>payloadReceiver</name>
+	<name>ConnectorService</name>
 
 	<properties>
 		<java.version>1.8</java.version>
