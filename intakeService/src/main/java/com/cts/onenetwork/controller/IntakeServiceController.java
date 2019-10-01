@@ -66,7 +66,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getSalesOrderFromSap(@RequestBody String payload) {
 		try {
-			String connectServicePayload = salesOrderToOneNetworkSalesOrderConversion.convert(payload);
+			String connectServicePayload = salesOrderToOneNetworkSalesOrderConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -90,7 +90,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getStockTransferOrderFromSap(@RequestBody String payload) {
 		try {
-			String connectServicePayload = stockTransferToEnhancedDeploymentOrderConversion.convert(payload);
+			String connectServicePayload = stockTransferToEnhancedDeploymentOrderConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -114,7 +114,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getPurchaseOrderFromSap(@RequestBody String payload) {
 		try {
-			String connectServicePayload = purchaseOrderToOneNetworkPurchaseOrderConversion.convert(payload);
+			String connectServicePayload = purchaseOrderToOneNetworkPurchaseOrderConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -138,7 +138,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getlocationFromGeoTab(@RequestBody String payload) {
 		try {
-			String connectServicePayload = carrierToMovementTrackingConversion.convert(payload);
+			String connectServicePayload = carrierToMovementTrackingConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -178,7 +178,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getTripStatusUpdateFromSap(@RequestBody String payload) {
 		try {
-			String connectServicePayload = tripStatusToTripStatusUpdateConverion.convert(payload);
+			String connectServicePayload = tripStatusToTripStatusUpdateConverion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -202,7 +202,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getCompletedTripStatusDetailsFromSap(@RequestBody String payload) {
 		try {
-			String connectServicePayload = tripStatusToTripStatusCompletedConversion.convert(payload);
+			String connectServicePayload = tripStatusToTripStatusCompletedConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -225,7 +225,7 @@ public class IntakeServiceController {
 	@PostMapping(value = "/tender", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getTenderDetailsFromJda(@RequestBody String payload) {
 		try {
-			String connectServicePayload = tenderToShipmentTrackingConversion.convert(payload);
+			String connectServicePayload = tenderToShipmentTrackingConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -249,7 +249,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getLoadCreationDetailsFromJda(@RequestBody String payload) {
 		try {
-			String connectServicePayload = loadCreationToShipmentInboundConversion.convert(payload);
+			String connectServicePayload = loadCreationToShipmentInboundConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -272,7 +272,7 @@ public class IntakeServiceController {
 	@PostMapping(value = "/delivery", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getDeliveryDetailsFromSap(@RequestBody String payload) {
 		try {
-			String connectServicePayload = deliveryToShipmentInboundConversion.convert(payload);
+			String connectServicePayload = deliveryToShipmentInboundConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())
@@ -296,7 +296,7 @@ public class IntakeServiceController {
 			MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<?> getTransportationDocumentdetailsFromSap(@RequestBody String payload) {
 		try {
-			String connectServicePayload = transportationDocumentToShipmentInboundConversion.convert(payload);
+			String connectServicePayload = transportationDocumentToShipmentInboundConversion.transform(payload);
 			RestTemplate template = new RestTemplate();
 			Map<String, Object> requestMap = new HashMap<>();
 			String url = UriComponentsBuilder.fromHttpUrl(intakeServiceConfig.getConnectorServiceEndpoint())

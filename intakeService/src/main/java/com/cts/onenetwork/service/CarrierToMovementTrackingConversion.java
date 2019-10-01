@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cts.onenetwork.interfaces.ConversionInterface;
+import com.cts.onenetwork.interfaces.TransformerInterface;
 import com.cts.onenetwork.models.destination.DestinationModel;
 import com.cts.onenetwork.models.source.SourceModel;
 import com.cts.onenetwork.util.IntakeServiceConstants;
@@ -15,11 +15,11 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class CarrierToMovementTrackingConversion implements ConversionInterface {
+public class CarrierToMovementTrackingConversion implements TransformerInterface {
 	public static Logger logger = LoggerFactory.getLogger(CarrierToMovementTrackingConversion.class);
 
 	@Override
-	public String convert(String srcObject) {
+	public String transform(String srcObject) {
 		try {
 			Gson gson = new Gson();
 			Type type = new TypeToken<SourceModel>() {

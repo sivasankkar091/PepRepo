@@ -1,4 +1,4 @@
-package com.cts.onenetwork.controller;
++package com.cts.onenetwork.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
